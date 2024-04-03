@@ -236,3 +236,13 @@ def readPDB(pdbFile: str) -> Protein:
                 protein: Protein = Protein(pepList=peptideBuffer, proteinName=pdbFile.split(os.sep)[-1].rstrip('.pdb'))
         return (protein)
 
+
+
+# Merge Peptides to generate a Protein.
+def assemble(pepList: list[Peptide], name: str = 'Unnamed') -> Protein:
+    """merge peptides.
+    Args:
+    
+    """
+    newProtein: Protein = Protein(pepList=pepList, proteinName=name)
+    return (newProtein)

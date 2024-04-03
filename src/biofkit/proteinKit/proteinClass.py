@@ -205,19 +205,16 @@ class Protein(object):
     def __getitem__(self, idx: int) -> Peptide:
         return (self.pepSet[idx])
 
-    def pick(self, chainId: str) -> list[Peptide]:
+    def pick(self, chainId: list[str]) -> list[Peptide]:
         """pick specific peptide from a Protein.
 
         Args:
-            chainId (str): Id of selected peptide.
+            chainId (list[str]): Id of selected peptides.
 
         Returns:
             list[Peptide]: a list of Peptides with given Id.
         """
 
-        output: list[Peptide] = []
-        for peptide in self.pepSet:
-            if (peptide.getChainId() == chainId):
-                output.append(peptide)
+        output: list[Peptide] = [peptide for peptide in self.pepSet if (peptide.getChainId() in chainId)]
         return (output)
 
