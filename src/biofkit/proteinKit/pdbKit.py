@@ -237,12 +237,49 @@ def readPDB(pdbFile: str) -> Protein:
         return (protein)
 
 
-
 # Merge Peptides to generate a Protein.
 def assemble(pepList: list[Peptide], name: str = 'Unnamed') -> Protein:
     """merge peptides.
+
     Args:
-    
+        newProtein (list[Peptide]): List of merged peptides.
+        name (str): Name of new protein.
+
+    Returns:
+        Protein.
     """
+
+    if (type(pepList) != list):
+        pepList = [pepList]
     newProtein: Protein = Protein(pepList=pepList, proteinName=name)
     return (newProtein)
+
+
+# Write Protein into a PDB file.
+def writePDB(protein: list[Protein], filePath: str, printInfo: bool = True) -> None:
+    """Write PDB file
+    
+    Args:
+        protein (Protein): The Protein you want to save as PDB file.
+        filePath (str): Output path.
+        printInfo (bool): Whether printing writing output or not.
+    """
+
+    if (type(protein) != list):
+        protein = [protein]
+    atomCol: str = 'ATOM'
+    col5_6: str = ' ' * 2
+    col12: str = ' '
+    col17: str = ' '
+    col21: str = ' '
+    col27_30: str = ' ' * 4    
+    for eachProtein in protein:
+        for peptide in eachProtein.pepSet:
+            for residue in peptide.resSet:
+                for atom in residue.atomSet:
+                    serialCol: str = ' ' * (5 - len(str(atom.serial))) + str(atom.serial).strip()
+                    nameCol: str = (' ' + atom.atom) if (len(atom.atom) < 4) else atom.atom
+                    resNameCol: str = residue.getName()
+                    chainIDCol: str = peptide.getChainId()[0]
+                    resSeqCol: str = ' ' * (4 - len(str(residue.resSeq))) + str(residue.resSeq)
+                    xCol: str = 

@@ -206,15 +206,29 @@ class Protein(object):
         return (self.pepSet[idx])
 
     def pick(self, chainId: list[str]) -> list[Peptide]:
-        """pick specific peptide from a Protein.
+        """Pick specific peptides from a Protein then create a list of Peptide.
 
         Args:
             chainId (list[str]): Id of selected peptides.
 
         Returns:
-            list[Peptide]: a list of Peptides with given Id.
+            list[Peptide]: A list of Peptides with given Id.
         """
 
         output: list[Peptide] = [peptide for peptide in self.pepSet if (peptide.getChainId() in chainId)]
         return (output)
 
+    def select(self, chainId: list[str]):
+        """Select specific peptides from a Protein then create a new Protein.
+
+        Args:
+            chainId (list[str]): Id of selected peptides.
+
+        Returns:
+            Protein: New name is Protein_[ChainId].
+        """
+
+        newPepList: list[Peptide] = [peptide for peptide in self.pepSet if (peptide.getChainId() in chainId)]
+        newName: str = self.name + str(chainId)
+        output: Protein = Protein(pepList=newPepList, proteinName=newName)
+        return (output)
