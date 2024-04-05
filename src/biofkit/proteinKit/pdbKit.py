@@ -1,12 +1,13 @@
 '''
-This script was created on Dec 16th, 2023 by Zhang Yujian as a doctoral candidate in Institute of Zoology, CAS.
+This script was created on Dec 17th, 2023 by Zhang Yujian as a doctoral candidate in Institute of Zoology, CAS.
 Thanks for using. Please report bugs (if any) at zhangyujian23@mails.ucas.ac.cn.
 Sorry for my poor English.
 '''
 
 import os
+from biofkit.proteinKit.proteinClass import Atom, Residue, Peptide, Protein
 
-class ProteinKit():
+class ProteinKit:
 
     # Dictionary used to transfer abbreviation with the first letter capitalized to shorter abbreviation.
     aaDictTHREE2One: dict[str, str] = {
@@ -62,18 +63,29 @@ class ProteinKit():
     # X: Orthogonal coordinates for X in angstroms (A).
     # Y: Orthogonal coordinates for Y in angstroms (A).
     # Z: Orthogonal coordinates for Z in angstroms (A).
-    pdbInfoColumns: [str] = ['Serial', 'Atom', 'ResName', 'ResSeq', 'ChainId', 'X', 'Y', 'Z']
+    pdbInfoColumns: list[str] = ['Serial', 'Atom', 'ResName', 'ResSeq', 'ChainId', 'X', 'Y', 'Z']
 
 
-    def __init__(self) -> None:
+    def __init__(self):
         pass
 
 
 
 # transfer protein structure file (pdb) into sequence string.
-def pdb2Seq(pdbFilePath: str, fastaFilePath: str = None, fastaLineLen: int = 80) -> dict[str, str]:
+def pdb2Seq(pdbFilePath: str, fastaFilePath: str = '', fastaLineLen: int = 80) -> dict[str, str]:
+    """Extract sequence information from a PDB file.
+
+    Args:
+        pdbFilePath (str): Path of PDB file.
+        fastaFilePath (str): FASTA file file output. None for nothing to create.
+        fastaLineLen (int): How many residue letter each line.
+
+    Returns:
+        dict[str, str]: Key is chainId. Value is sequence.
+    """
+
     proteinKit: ProteinKit = ProteinKit()
-    with open(file=pdbFilePath) as pdbFile:
+    with open(file=pdbFilePath, mode='r') as pdbFile:
         thisChainId: str = 'defined'
         line: str = pdbFile.readline()
         chainSeq: str = ''
@@ -126,7 +138,7 @@ def pdb2Seq(pdbFilePath: str, fastaFilePath: str = None, fastaLineLen: int = 80)
                 resSeq = 0
                 chainSeq = ''
     # output the fasta files.
-    if (fastaFilePath is not None):
+    if (fastaFilePath):
         fileName: str = pdbFilePath.split(os.sep)[-1].rstrip('.pdb')
         with open(file=os.path.join(fastaFilePath, fileName+'.fasta'), mode='w') as fastaFile:
             for key in output.keys():
@@ -139,64 +151,98 @@ def pdb2Seq(pdbFilePath: str, fastaFilePath: str = None, fastaLineLen: int = 80)
 
 
 
-# load the information of all amino-acid-residue atoms into a list. output[idx] shows the information of an atom.
-def pdb2List(pdbFilePath: str, csvPath: str = None, colName: bool = False) -> list[list[int, str, str, int, str, float, float, float]]:
-    output: list[list] = []
-    # pdbInfoColumns: [str] = ['Serial', 'Atom', 'ResName', 'ResSeq', 'ChainId', 'X', 'Y', 'Z']
-    if (colName):
-        proteinKit: ProteinKit = ProteinKit()
-        output.append(proteinKit.pdbInfoColumns)
-    with open(file=pdbFilePath, mode='r') as pdbFile:
-        line: str = pdbFile.readline()
-        if (line.startswith('ATOM')):
-            output.append([int(line[6:11].strip()), str(line[12:16].strip()), \
-                            str(line[17:20].strip()), int(line[22:26].strip()), \
-                            str(line[21]), float(line[30:38].strip()), \
-                            float(line[38:46].strip()), float(line[46:54])])
-        while (line):
-            line = pdbFile.readline()
-            if (line.startswith('ATOM')):
-                output.append([int(line[6:11].strip()), str(line[12:16].strip()), \
-                            str(line[17:20].strip()), int(line[22:26].strip()), \
-                            str(line[21]), float(line[30:38].strip()), \
-                            float(line[38:46].strip()), float(line[46:54])])
-    # output the csv file.
-    if (csvPath is not None):
-        for atomListIdx in range(len(output)):
-            output[atomListIdx] = list(map(str, output[atomListIdx]))
-        with open(file=csvPath, mode='w') as csvFile:
-            csvFile.writelines([','.join(atomInfoList)+'\n' for atomInfoList in output])
-    return (output)
 
+# load PDB file
+def readPDB(pdbFile: str) -> Protein:
+    """Load PDB file to get a Protein.
+    Args:
+        pdbFile (str): PDB file path.
 
+    Returns:
+        Protein: Class Protein in proteinClass.py
+    """
 
-# load the information of all amimo-acid-residue atoms into a dictionary, which can be converted into a dataframe with famous `pandas`.
-def pdb2Dict(pdbFilePath: str) -> dict[str, list]:
-    # pdbInfoColumns: [str] = ['Serial', 'Atom', 'ResName', 'ResSeq', 'ChainId', 'X', 'Y', 'Z']
     proteinKit: ProteinKit = ProteinKit()
-    keyNameList: list[str] = proteinKit.pdbInfoColumns
-    output: dict[str, list] = {keyName: [] for keyName in keyNameList}
-    with open(file=pdbFilePath, mode='r') as pdbFile:
-        line: str = pdbFile.readline()
+    with open(file=pdbFile, mode='r') as pdb:
+        atomBuffer: list[Atom] = []
+        residueBuffer: list[Residue] = []
+        peptideBuffer: list[Peptide] = []
+        resSeq: int = 0
+        resName: str = ''
+        chainId: str = ''
+        line: str = pdb.readline()
         if (line.startswith('ATOM')):
-            output[keyNameList[0]].append(int(line[6:11].strip()))
-            output[keyNameList[1]].append(str(line[12:16].strip()))
-            output[keyNameList[2]].append(str(line[17:20].strip()))
-            output[keyNameList[3]].append(int(line[22:26].strip()))
-            output[keyNameList[4]].append(str(line[21]))
-            output[keyNameList[5]].append(float(line[30:38].strip()))
-            output[keyNameList[6]].append(float(line[38:46].strip()))
-            output[keyNameList[7]].append(float(line[46:54].strip()))
+            atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54].strip())))
+            resName = str(line[17:20].strip())
+            resSeq = int(line[22:26].strip())
+            chainId = str(line[21])
         while (line):
-            line = pdbFile.readline()
+            line = pdb.readline()
             if (line.startswith('ATOM')):
-                output[keyNameList[0]].append(int(line[6:11].strip()))
-                output[keyNameList[1]].append(str(line[12:16].strip()))
-                output[keyNameList[2]].append(str(line[17:20].strip()))
-                output[keyNameList[3]].append(int(line[22:26].strip()))
-                output[keyNameList[4]].append(str(line[21]))
-                output[keyNameList[5]].append(float(line[30:38].strip()))
-                output[keyNameList[6]].append(float(line[38:46].strip()))
-                output[keyNameList[7]].append(float(line[46:54].strip()))
-    return (output)
+                if ((not chainId) or (str(line[21])==chainId)):
+                    # Chain continue
+                    if ((not resSeq) or (int(line[22:26].strip())==resSeq)):
+                        # Residue continue
+                        resName = str(line[17:20].strip())
+                        resSeq = int(line[22:26].strip())
+                        chainId = str(line[21])
+                        atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54])))
+                    else:
+                        # Residue TER
+                        try:
+                            residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=proteinKit.aaDictTHREE2One[resName]))
+                        except (KeyError):
+                            residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=resName))
+                        except (Exception) as e:
+                            print(e)
+                            raise
+                        # Initiate atomBuffer
+                        atomBuffer = []
+                        # Read new atom properties
+                        atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54].strip())))
+                        # Read new residue/chain properties
+                        resSeq = int(line[22:26].strip())
+                        resName = str(line[17:20].strip())
+                        chainId = str(line[21])
+                else:
+                    # Chain TER/Residue TER
+                    try:
+                        residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=proteinKit.aaDictTHREE2One[resName]))
+                    except (KeyError):
+                        residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=resName))
+                    except (Exception) as e:
+                        print(e)
+                        raise
+                    peptideBuffer.append(Peptide(resList=residueBuffer, chainId=chainId))
+                    # Initiate atomBuffer/residueBuffer
+                    atomBuffer = []
+                    residueBuffer = []
+                    # Read new atom properties
+                    atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54].strip())))
+                    # Read new residue/chain properties
+                    resSeq = int(line[22:26].strip())
+                    resName = str(line[17:20].strip())
+                    chainId = str(line[21])
+        if (not atomBuffer):
+            residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=proteinKit.aaDictTHREE2One[resName]))
+            peptideBuffer.append(Peptide(resList=residueBuffer, chainId=chainId))
+            protein: Protein = Protein(pepList=peptideBuffer, proteinName=pdbFile.split(os.sep)[-1].rstrip('.pdb'))
+        else:
+            try:
+                peptideBuffer.append(Peptide(resList=residueBuffer, chainId=chainId))
+            except Exception:
+                pass
+            finally:
+                protein: Protein = Protein(pepList=peptideBuffer, proteinName=pdbFile.split(os.sep)[-1].rstrip('.pdb'))
+        return (protein)
 
+
+
+# Merge Peptides to generate a Protein.
+def assemble(pepList: list[Peptide], name: str = 'Unnamed') -> Protein:
+    """merge peptides.
+    Args:
+    
+    """
+    newProtein: Protein = Protein(pepList=pepList, proteinName=name)
+    return (newProtein)
