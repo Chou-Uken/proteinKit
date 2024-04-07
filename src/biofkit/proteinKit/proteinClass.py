@@ -10,9 +10,12 @@ class Atom(object):
         x (float): Coordinate of x.
         y (float): Coordinate of y.
         z (float): Coordinate of z.
+        occupancy (float): Occupancy of atom.
+        tempFactor (float): Temperature factor of atom.
+        element (str): Element symbol.
     """
 
-    def __init__(self, serial: int, atom: str, x: float, y: float, z: float):
+    def __init__(self, serial: int, atom: str, x: float, y: float, z: float, occupancy: float, tempFactor: float, element: str):
         """Inits Atom with its id, type and coordinate.
 
         Args:
@@ -21,6 +24,9 @@ class Atom(object):
             x (float): Coordinate of x.
             y (float): Coordinate of y.
             z (float): Coordinate of z.
+            occupancy (float): Occupancy of atom.
+            tempFactor (float): Temperature factor of atom.
+            element (str): Element symbol.
         """
 
         self.serial: int = int(serial)
@@ -28,6 +34,9 @@ class Atom(object):
         self.x: float = float(x)
         self.y: float = float(y)
         self.z: float = float(z)
+        self.occupancy: float = float(occupancy)
+        self.tempFactor: float = float(tempFactor)
+        self.element: str = str(element)
 
     def __str__(self) -> str:
         return ('Atom: {name} at location of ({x}, {y}, {z})'.format(name=self.atom, x=self.x, y=self.y, z=self.z))
@@ -232,3 +241,4 @@ class Protein(object):
         newName: str = self.name + str(chainId)
         output: Protein = Protein(pepList=newPepList, proteinName=newName)
         return (output)
+    

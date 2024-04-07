@@ -273,13 +273,25 @@ def writePDB(protein: list[Protein], filePath: str, printInfo: bool = True) -> N
     col17: str = ' '
     col21: str = ' '
     col27_30: str = ' ' * 4    
+    col67_76: str = ' ' * 10
+    col79_80: str = ' ' * 2
     for eachProtein in protein:
-        for peptide in eachProtein.pepSet:
-            for residue in peptide.resSet:
-                for atom in residue.atomSet:
-                    serialCol: str = ' ' * (5 - len(str(atom.serial))) + str(atom.serial).strip()
-                    nameCol: str = (' ' + atom.atom) if (len(atom.atom) < 4) else atom.atom
-                    resNameCol: str = residue.getName()
-                    chainIDCol: str = peptide.getChainId()[0]
-                    resSeqCol: str = ' ' * (4 - len(str(residue.resSeq))) + str(residue.resSeq)
-                    xCol: str = 
+        with open(file=os.path.join(filePath, eachProtein.name+'.pdb'), mode='w') as thisPDB:
+            for peptide in eachProtein.pepSet:
+                for residue in peptide.resSet:
+                    for atom in residue.atomSet:
+                        serialCol: str = ' ' * (5 - len(str(atom.serial))) + str(atom.serial).strip()
+                        nameCol: str = (' ' + atom.atom) if (len(atom.atom) < 4) else atom.atom
+                        resNameCol: str = residue.getName()
+                        chainIDCol: str = peptide.getChainId()[0]
+                        resSeqCol: str = ' ' * (4 - len(str(residue.resSeq))) + str(residue.resSeq)
+                        xCol: str = ' ' * (8 - len('%.3f'%atom.getCoord()['x'])) + '%.3f'%atom.getCoord()['x']
+                        yCol: str = ' ' * (8 - len('%.3f'%atom.getCoord()['y'])) + '%.3f'%atom.getCoord()['y']
+                        zCol: str = ' ' * (8 - len('%.3f'%atom.getCoord()['z'])) + '%.3f'%atom.getCoord()['z']
+                        occupancyCol: str = ' ' * (6 - len('%.2f'%atom.occupancy)) + '%.2f'%atom.occupancy
+                        tempFactorCol: str = ' ' * (6 - len('%.2f'%atom.tempFactor)) + '%.2f'%atom.tempFactor
+                        elementCol: str = ' ' * (2 - len(atom.element)) + str(atom.element)
+                        line: str = ''.join([atomCol, col5_6, serialCol, col12, nameCol, col17, resNameCol, col21, chainIDCol, resSeqCol, col27_30, xCol, yCol, zCol, occupancyCol, tempFactorCol, col67_76, elementCol, col79_80])
+                        thisPDB.write(line + '\n')
+                thisPDB.write('TER\n')
+            thisPDB.write('END\n')
