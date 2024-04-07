@@ -172,7 +172,7 @@ def readPDB(pdbFile: str) -> Protein:
         chainId: str = ''
         line: str = pdb.readline()
         if (line.startswith('ATOM')):
-            atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54].strip())))
+            atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54].strip()), occupancy=float(line[54:60].strip()), tempFactor=float(line[60:66].strip()), element=line[76:78].strip()))
             resName = str(line[17:20].strip())
             resSeq = int(line[22:26].strip())
             chainId = str(line[21])
@@ -186,11 +186,11 @@ def readPDB(pdbFile: str) -> Protein:
                         resName = str(line[17:20].strip())
                         resSeq = int(line[22:26].strip())
                         chainId = str(line[21])
-                        atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54])))
+                        atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54].strip()), occupancy=float(line[54:60].strip()), tempFactor=float(line[60:66].strip()), element=line[76:78].strip()))
                     else:
                         # Residue TER
                         try:
-                            residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=proteinKit.aaDictTHREE2One[resName]))
+                            residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=resName))
                         except (KeyError):
                             residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=resName))
                         except (Exception) as e:
@@ -199,7 +199,7 @@ def readPDB(pdbFile: str) -> Protein:
                         # Initiate atomBuffer
                         atomBuffer = []
                         # Read new atom properties
-                        atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54].strip())))
+                        atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54].strip()), occupancy=float(line[54:60].strip()), tempFactor=float(line[60:66].strip()), element=line[76:78].strip()))
                         # Read new residue/chain properties
                         resSeq = int(line[22:26].strip())
                         resName = str(line[17:20].strip())
@@ -207,7 +207,7 @@ def readPDB(pdbFile: str) -> Protein:
                 else:
                     # Chain TER/Residue TER
                     try:
-                        residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=proteinKit.aaDictTHREE2One[resName]))
+                        residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=resName))
                     except (KeyError):
                         residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=resName))
                     except (Exception) as e:
@@ -218,13 +218,13 @@ def readPDB(pdbFile: str) -> Protein:
                     atomBuffer = []
                     residueBuffer = []
                     # Read new atom properties
-                    atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54].strip())))
+                    atomBuffer.append(Atom(serial=int(line[6:11].strip()), atom=str(line[12:16].strip()), x=float(line[30:38].strip()), y=float(line[38:46].strip()), z=float(line[46:54].strip()), occupancy=float(line[54:60].strip()), tempFactor=float(line[60:66].strip()), element=line[76:78].strip()))
                     # Read new residue/chain properties
                     resSeq = int(line[22:26].strip())
                     resName = str(line[17:20].strip())
                     chainId = str(line[21])
         if (not atomBuffer):
-            residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=proteinKit.aaDictTHREE2One[resName]))
+            residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=resName))
             peptideBuffer.append(Peptide(resList=residueBuffer, chainId=chainId))
             protein: Protein = Protein(pepList=peptideBuffer, proteinName=pdbFile.split(os.sep)[-1].rstrip('.pdb'))
         else:
@@ -281,7 +281,7 @@ def writePDB(protein: list[Protein], filePath: str, printInfo: bool = True) -> N
                 for residue in peptide.resSet:
                     for atom in residue.atomSet:
                         serialCol: str = ' ' * (5 - len(str(atom.serial))) + str(atom.serial).strip()
-                        nameCol: str = (' ' + atom.atom) if (len(atom.atom) < 4) else atom.atom
+                        nameCol: str = (' ' + atom.atom + ' ' * (3 - len(atom.atom))) if (len(atom.atom) < 4) else atom.atom
                         resNameCol: str = residue.getName()
                         chainIDCol: str = peptide.getChainId()[0]
                         resSeqCol: str = ' ' * (4 - len(str(residue.resSeq))) + str(residue.resSeq)

@@ -1,6 +1,14 @@
 # This script was created on Feb 22nd, 2024 by Zhang Yujian as a doctoral candidate in Institute of Zoology, CAS.
 # Thanks for using. Please report bugs (if any) at zhangyujian23@mails.ucas.ac.cn.
 
+aaDictTHREE2One: dict[str, str] = {
+    'ALA': 'A', 'ARG': 'R', 'ASN': 'N', 'ASP': 'D', 'CYS': 'C',    \
+    'GLN': 'Q', 'GLU': 'E', 'GLY': 'G', 'HIS': 'H', 'ILE': 'I',    \
+    'LEU': 'L', 'LYS': 'K', 'MET': 'M', 'PHE': 'F', 'PRO': 'P',    \
+    'SER': 'S', 'THR': 'T', 'TRP': 'W', 'TYR': 'Y', 'VAL': 'V',    \
+    'SEC': 'U', 'PYL': 'O'                                          # Rare amino acid
+}
+
 class Atom(object):
     """A class containing number, type and coordinate of an atom.
 
@@ -137,10 +145,10 @@ class Peptide(object):
             self.resSet: list[Residue] = resList
 
     def __str__(self) -> str:
-        return ('Chain {name}: {seq}'.format(name=self.chainId, seq=''.join([i.getName() for i in self.resSet])))
+        return ('Chain {name}: {seq}'.format(name=self.chainId, seq=''.join([i.getName() for i in aaDictTHREE2One[self.resSet]])))
 
     def __repr__(self) -> str:
-        return ('Chain {name}: {seq}'.format(name=self.chainId, seq=''.join([i.getName() for i in self.resSet])))
+        return ('Chain {name}: {seq}'.format(name=self.chainId, seq=''.join([i.getName() for i in aaDictTHREE2One[self.resSet]])))
 
     def __len__(self) -> int:
         return (len(self.resSet))
