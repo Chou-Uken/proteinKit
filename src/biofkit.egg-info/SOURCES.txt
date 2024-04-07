@@ -1,0 +1,14 @@
+LICENSE
+README.md
+pyproject.toml
+src/biofkit/__init__.py
+src/biofkit.egg-info/PKG-INFO
+src/biofkit.egg-info/SOURCES.txt
+src/biofkit.egg-info/dependency_links.txt
+src/biofkit.egg-info/top_level.txt
+src/biofkit/proteinKit/__init__.py
+src/biofkit/proteinKit/oldProtein.py
+src/biofkit/proteinKit/pdbKit.py
+src/biofkit/proteinKit/proteinClass.py
+src/biofkit/seqKit/__init__.py
+src/biofkit/seqKit/convKit.py

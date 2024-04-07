@@ -250,3 +250,4 @@ class Protein(object):
         output: Protein = Protein(pepList=newPepList, proteinName=newName)
         return (output)
     
+    

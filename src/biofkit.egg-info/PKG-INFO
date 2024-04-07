@@ -1,0 +1,37 @@
+Metadata-Version: 2.1
+Name: biofkit
+Version: 0.1.14
+Summary: With biofkit you can deal with pdb file (extract sequence, atom information and so on) very easily. More functions are being developed
+Author-email: Zhang Yujian <Chouuken@outlook.com>, Wu Yuexin <wuyvexiaoxin@163.com>
+Project-URL: Homepage, https://github.com/Chou-Uken/biofkit
+Project-URL: Issues, https://github.com/Chou-Uken/biofkit/issues
+Classifier: Development Status :: 3 - Alpha
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# biofkit
+Biofkit is now containing only one module with one package which can deal with pdb file (extract sequence, atom information and so on) very easily. 
+
+## How to Install
+### Conda
+```console
+conda install -c chou_uken biofkit
+```
+### Mamba
+``` 
+mamba install -c chou_uken biofkit
+```
+
+### Pip
+```console
+pip install biofkit
+```
+
+## How to Use
+Documents will help you!
+[中文文档](https://chou-uken.github.io/biofkit/chinese/)
+Waiting for more languages...

@@ -5,7 +5,7 @@ authors = [
   { name="Zhang Yujian", email="Chouuken@outlook.com" },
   { name="Wu Yuexin", email="wuyvexiaoxin@163.com" }
 ]
-description = "With biofkit you can deal with pdb file (extract sequence, atom information and so on) very easily. More functions are being developed"
+description = "With biofkit you can deal with pdb file (extract sequence, atom information and so on) very easily. Pairwise alignment function is now online."
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
