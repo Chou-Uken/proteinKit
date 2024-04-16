@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: biofkit
-Version: 0.1.14
-Summary: With biofkit you can deal with pdb file (extract sequence, atom information and so on) very easily. More functions are being developed
+Version: 0.1.15
+Summary: With biofkit you can deal with pdb file (extract sequence, atom information and so on) very easily. Pairwise alignment function is now online.
 Author-email: Zhang Yujian <Chouuken@outlook.com>, Wu Yuexin <wuyvexiaoxin@163.com>
 Project-URL: Homepage, https://github.com/Chou-Uken/biofkit
 Project-URL: Issues, https://github.com/Chou-Uken/biofkit/issues

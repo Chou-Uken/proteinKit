@@ -1,6 +1,6 @@
 [project]
 name = "biofkit"
-version = "0.1.14"
+version = "0.1.15"
 authors = [
   { name="Zhang Yujian", email="Chouuken@outlook.com" },
   { name="Wu Yuexin", email="wuyvexiaoxin@163.com" }
