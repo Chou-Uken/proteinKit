@@ -139,7 +139,7 @@ def pdb2Seq(pdbFilePath: str, fastaFilePath: str = '', fastaLineLen: int = 80) -
                 chainSeq = ''
     # output the fasta files.
     if (fastaFilePath):
-        fileName: str = pdbFilePath.split(os.sep)[-1].split('.pdb')[0]
+        fileName: str = pdbFilePath.split(os.sep)[-1].rstrip('.pdb')
         with open(file=os.path.join(fastaFilePath, fileName+'.fasta'), mode='w') as fastaFile:
             for key in output.keys():
                 fastaFile.write('>'+fileName+'_chain_'+key+'\n')
@@ -226,14 +226,14 @@ def readPDB(pdbFile: str) -> Protein:
         if (not atomBuffer):
             residueBuffer.append(Residue(atomList=atomBuffer, resSeq=resSeq, resName=resName))
             peptideBuffer.append(Peptide(resList=residueBuffer, chainId=chainId))
-            protein: Protein = Protein(pepList=peptideBuffer, proteinName=pdbFile.split(os.sep)[-1].split('.pdb')[0])
+            protein: Protein = Protein(pepList=peptideBuffer, proteinName=pdbFile.split(os.sep)[-1].rstrip('.pdb'))
         else:
             try:
                 peptideBuffer.append(Peptide(resList=residueBuffer, chainId=chainId))
             except Exception:
                 pass
             finally:
-                protein: Protein = Protein(pepList=peptideBuffer, proteinName=pdbFile.split(os.sep)[-1].split('.pdb')[0])
+                protein: Protein = Protein(pepList=peptideBuffer, proteinName=pdbFile.split(os.sep)[-1].rstrip('.pdb'))
         return (protein)
 
 

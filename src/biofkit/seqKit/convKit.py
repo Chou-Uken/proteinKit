@@ -53,7 +53,7 @@ class ConvKit:
     # DNA Substitution Matrix
     # Unitary matrix
     dnaUnitaryMatrix: dict[bool, int] = {True: 1, False: 0}
-    
+
     # Transition-transversion matrix
     dnaTTMatrix: dict[str, int] = {True: 1, 'transition': -1, 'transversion': -5}
 
@@ -194,7 +194,7 @@ class ConvKit:
         'YY': 10, 'YW': 0, \
         'WY': 0
     }
-    
+
     # BLOSUM-62 matrix
     blosum62Matrix: dict[str, int] = {
         'AA': 4, 'AR': -1, 'AN': -2, 'AD': -2, 'AC': 0, \
@@ -285,10 +285,20 @@ class ConvKit:
 
     def __init__(self):
         pass
-        
+
 
 # Read fasta files
 def readFasta(fastaFilePath: str) -> dict[str, str]:
+    """To read FASTA file and get its identifiers and sequences. The output is a dictionary whose keys are identifiers, values are sequences
+
+    Args:
+        fastaFilePath (str): Path of FASTA file.
+
+    Returns:
+        dict[str, str]: Keys are identifiers. And values are sequences.
+
+    """
+
     outputDict: dict[str, str] = {}
     with open(file=fastaFilePath, mode='r') as f:
         line: str = f.readline()
@@ -311,6 +321,15 @@ def readFasta(fastaFilePath: str) -> dict[str, str]:
 
 # transcription
 def dna2Rna(dnaSeq: str) -> str:
+    """To transcribe DNA into RNA.
+
+    Args:
+        dnaSeq (str): DNA sequence. Capitalization does not matter.
+
+    Returns:
+        str: RNA sequence. All letters are uppercase.
+    """
+
     convKit: ConvKit = ConvKit()
     output = dnaSeq.upper().translate(str.maketrans(convKit.dna2RnaDict))
     return (output)
@@ -318,6 +337,15 @@ def dna2Rna(dnaSeq: str) -> str:
 
 # reverse transcription
 def rna2Dna(rnaSeq: str) -> str:
+    """To reverse transcribe RNA sequence into DNA sequence.
+
+    Args:
+        rnaSeq (str): RNA sequence. Capitalization does not matter.
+
+    Returns:
+        str: DNA sequence. All letters are uppercase.
+    """
+
     convKit: ConvKit = ConvKit()
     output = rnaSeq.upper().translate(str.maketrans(convKit.rna2DnaDict))
     return (output)
@@ -325,6 +353,17 @@ def rna2Dna(rnaSeq: str) -> str:
 
 # DNA translation
 def dna2Pro(dnaSeq: str, start: int = 0, end: int = -1) -> str:
+    """To translate DNA sequence into protein sequence directly.
+
+    Args:
+        dnaSeq (str): DNA sequence. Capitalization does not matter.
+        start (int): Beginning site of the translation.
+        end (int): Ending site of the translation.
+
+    Returns:
+        str: Protein sequence. All letters are uppercase.
+    """
+
     if (end == -1):
         end = len(dnaSeq) - 1
     assert (end > start), 'Invalid arguments!'
@@ -340,6 +379,17 @@ def dna2Pro(dnaSeq: str, start: int = 0, end: int = -1) -> str:
 
 # RNA translation
 def rna2Pro(rnaSeq: str, start: int = 0, end: int = -1) -> str:
+    """To translate RNA sequence into protein sequence.
+
+    Args:
+        rnaSeq (str): RNA sequence. Capitalization does not matter.
+        start (int): Beginning site of the translation.
+        end (int): Ending site of the translation.
+
+    Returns:
+        str: Protein sequence. All letters are uppercase.
+    """
+
     if (end == -1):
         end = len(rnaSeq) - 1
     assert (end > start), 'Invalid arguments!'
@@ -351,25 +401,37 @@ def rna2Pro(rnaSeq: str, start: int = 0, end: int = -1) -> str:
         i += 3
     output: str = ''.join(outputList)
     return (output)
-    
+
 
 # Alignment
-def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', matrix: str = 'unitary', gapOpen: float = -10, gapExtend: float = -0.5, consoleWidth = 50) -> None:
+def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', matrix: str = 'unitary', gapOpen: float = -10, gapExtend: float = -0.5, consoleWidth: int = 50) -> None:
+    """Pairwise DNA Alignment. Results will be output in console.
+
+    Args:
+        fasta (str): FASTA file with two sequences.
+        seqA (str): If no FASTA file is given. Sequence can be put into argument seqA.
+        seqB (str): If no FASTA file is given. Sequence can be put into argument seqB.
+        matrix (str): score matrix. Can be 'unitary', 'blast' or 'tt'.
+        gapOpen (float): Punishment for opening a gap.
+        gapExtend (float): Punishment for extending a gap.
+        consoleWidth (int): This determine how many bases shown in a single line.
+    """
+
     if (fasta != ''):
         sequences: dict[str, str] = readFasta(fastaFilePath=fasta)
-    seqA: str = list(sequences.values())[0]
-    seqB: str = list(sequences.values())[1]
+        seqA: str = list(sequences.values())[0]
+        seqB: str = list(sequences.values())[1]
     seqA = seqA.upper()
     seqB = seqB.upper()
     # sequence cleaning (remove elements excluding [A, C, G, T])
     def dnaSeqClean(seq: str) -> str:
         seqOut: str = ''.join(list(map(lambda x:x if (x in ['A', 'C', 'G', 'T']) else '', seq)))
         return (seqOut)
-    
+
     seqA = dnaSeqClean(seq=seqA)
     seqB = dnaSeqClean(seq=seqB)
     assert (len(seqA) * len(seqB) != 0), 'empty string or not DNA sequence'
-        
+
     convKit: ConvKit = ConvKit()
     scoreMatrix: list[list[float]] = []
     for i in range(len(seqB)+1):
@@ -377,13 +439,13 @@ def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', m
         for j in range(len(seqA)+1):
             scoreMatrix[i].append(0)
     # Needleman-Wunsch (NW)
-            
+
     # Matrix initiation
     for rowIdx in range(1, len(seqB)+1):
         scoreMatrix[rowIdx][0] = gapOpen + gapExtend * (rowIdx - 1)
     for columnIdx in range(len(seqA)+1):
         scoreMatrix[0][columnIdx] = gapOpen + gapExtend * (columnIdx - 1)
-    
+
     actionArray: list[list[bool]] = [[False, True] for columnIdx in range(len(seqA)+2)]
     actionArray[0] = [True, False]
 
@@ -398,13 +460,13 @@ def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', m
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapExtend
                     else:
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapOpen
-                    
+
                     # thisD
                     if (actionArray[columnIdx+1][0]):
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapExtend
                     else:
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapOpen
-                    
+
                     # thisC
                     thisC: float = scoreMatrix[rowIdx-1][columnIdx-1] + convKit.dnaUnitaryMatrix[(seqA[columnIdx-1]==seqB[rowIdx-1])]
 
@@ -432,13 +494,13 @@ def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', m
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapExtend
                     else:
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapOpen
-                    
+
                     # thisD
                     if (actionArray[columnIdx+1][0]):
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapExtend
                     else:
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapOpen
-                    
+
                     # thisC
                     thisC: float = scoreMatrix[rowIdx-1][columnIdx-1] + convKit.dnaBlastMatrix[(seqA[columnIdx-1]==seqB[rowIdx-1])]
 
@@ -468,13 +530,13 @@ def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', m
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapExtend
                     else:
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapOpen
-                    
+
                     # thisD
                     if (actionArray[columnIdx+1][0]):
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapExtend
                     else:
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapOpen
-                    
+
                     # thisC
                     if (seqB[rowIdx-1] == seqA[columnIdx-1]):
                         thisC: float = scoreMatrix[rowIdx-1][columnIdx-1] + convKit.dnaTTMatrix[True]
@@ -501,7 +563,7 @@ def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', m
         case (_):
             print('Unknown matrix. \'unitary\', \'blast\' and \'tt\' are supported')
             return (1)
-        
+
     finalScore: float = scoreMatrix[-1][-1]
     # backforward
     steps: list[str] = []
@@ -526,11 +588,11 @@ def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', m
             else:
                 steps.insert(0, 'r')
                 columnIdx -= 1
-            
+
         elif ((rowIdx == 0) and (columnIdx != 0)):
             steps.insert(0, 'r')
             columnIdx -= 1
-            
+
         else:
             steps.insert(0, 'd')
             rowIdx -= 1
@@ -561,8 +623,8 @@ def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', m
             seqAlign += '|'
         else:
             seqAlign += ' '
-    
-    
+
+
     seqAOut = [seqAOut[i:i+consoleWidth] for i in range(0, len(seqAOut), consoleWidth)]
     seqAlign = [seqAlign[i:i+consoleWidth] for i in range(0, len(seqAlign), consoleWidth)]
     seqBOut = [seqBOut[i:i+consoleWidth] for i in range(0, len(seqBOut), consoleWidth)]
@@ -573,7 +635,18 @@ def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', m
     print(finalScore)
 
 
-def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', matrix: str = 'unitary', gapOpen: float = -10, gapExtend: float = -0.5, consoleWidth = 50) -> None:
+def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', matrix: str = 'unitary', gapOpen: float = -10, gapExtend: float = -0.5, consoleWidth: int = 50) -> None:
+    """Pairwise Protein Alignment. Results will be output in console.
+
+    Args:
+        fasta (str): FASTA file with two sequences.
+        seqA (str): If no FASTA file is given. Sequence can be put into argument seqA.
+        seqB (str): If no FASTA file is given. Sequence can be put into argument seqB.
+        matrix (str): score matrix. Can be 'unitary', 'blosum62' or 'pam250'.
+        gapOpen (float): Punishment for opening a gap.
+        gapExtend (float): Punishment for extending a gap.
+        consoleWidth (int): This determine how many bases shown in a single line.
+    """
     if (fasta != ''):
         sequences: dict[str, str] = readFasta(fastaFilePath=fasta)
     seqA: str = list(sequences.values())[0]
@@ -581,7 +654,7 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
 
     seqA = seqA.upper()
     seqB = seqB.upper()
-        
+
     convKit: ConvKit = ConvKit()
     scoreMatrix: list[list[float]] = []
     for i in range(len(seqB)+1):
@@ -599,7 +672,7 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
                 scoreMatrix[rowIdx][0] = gapOpen + gapExtend * (rowIdx - 1)
             for columnIdx in range(len(seqA)+1):
                 scoreMatrix[0][columnIdx] = gapOpen + gapExtend * (columnIdx - 1)
-            
+
             actionArray: list[list[bool]] = [[False, True] for columnIdx in range(len(seqA)+2)]
             actionArray[0] = [True, False]
 
@@ -611,13 +684,13 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapExtend
                     else:
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapOpen
-                    
+
                     # thisD
                     if (actionArray[columnIdx+1][0]):
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapExtend
                     else:
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapOpen
-                    
+
                     # thisC
                     thisC: float = scoreMatrix[rowIdx-1][columnIdx-1] + convKit.protUnitaryMatrix[(seqA[columnIdx-1]==seqB[rowIdx-1])]
 
@@ -642,7 +715,7 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
             def dnaSeqClean(seq: str) -> str:
                 seqOut: str = ''.join(list(map(lambda x:x if (x in ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']) else '', seq)))
                 return (seqOut)
-            
+
             seqA = dnaSeqClean(seq=seqA)
             seqB = dnaSeqClean(seq=seqB)
             assert (len(seqA) * len(seqB) != 0), 'pam250 can only be used for 20 common residues'
@@ -652,7 +725,7 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
                 scoreMatrix[rowIdx][0] = gapOpen + gapExtend * (rowIdx - 1)
             for columnIdx in range(len(seqA)+1):
                 scoreMatrix[0][columnIdx] = gapOpen + gapExtend * (columnIdx - 1)
-            
+
             actionArray: list[list[bool]] = [[False, True] for columnIdx in range(len(seqA)+2)]
             actionArray[0] = [True, False]
 
@@ -664,13 +737,13 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapExtend
                     else:
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapOpen
-                    
+
                     # thisD
                     if (actionArray[columnIdx+1][0]):
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapExtend
                     else:
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapOpen
-                    
+
                     # thisC
                     thisC: float = scoreMatrix[rowIdx-1][columnIdx-1] + convKit.pam250Matrix[seqA[columnIdx-1]+seqB[rowIdx-1]]
 
@@ -695,7 +768,7 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
             def dnaSeqClean(seq: str) -> str:
                 seqOut: str = ''.join(list(map(lambda x:x if (x in ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']) else '', seq)))
                 return (seqOut)
-            
+
             seqA = dnaSeqClean(seq=seqA)
             seqB = dnaSeqClean(seq=seqB)
             assert (len(seqA) * len(seqB) != 0), 'blosum62 can only be used for 20 common residues'
@@ -705,7 +778,7 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
                 scoreMatrix[rowIdx][0] = gapOpen + gapExtend * (rowIdx - 1)
             for columnIdx in range(len(seqA)+1):
                 scoreMatrix[0][columnIdx] = gapOpen + gapExtend * (columnIdx - 1)
-            
+
             actionArray: list[list[bool]] = [[False, True] for columnIdx in range(len(seqA)+2)]
             actionArray[0] = [True, False]
 
@@ -717,13 +790,13 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapExtend
                     else:
                         thisR: float = scoreMatrix[rowIdx][columnIdx-1] + gapOpen
-                    
+
                     # thisD
                     if (actionArray[columnIdx+1][0]):
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapExtend
                     else:
                         thisD: float = scoreMatrix[rowIdx-1][columnIdx] + gapOpen
-                    
+
                     # thisC
                     thisC: float = scoreMatrix[rowIdx-1][columnIdx-1] + convKit.blosum62Matrix[seqA[columnIdx-1]+seqB[rowIdx-1]]
 
@@ -770,11 +843,11 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
             else:
                 steps.insert(0, 'r')
                 columnIdx -= 1
-            
+
         elif ((rowIdx == 0) and (columnIdx != 0)):
             steps.insert(0, 'r')
             columnIdx -= 1
-            
+
         else:
             steps.insert(0, 'd')
             rowIdx -= 1
@@ -805,8 +878,8 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
             seqAlign += '|'
         else:
             seqAlign += ' '
-    
-    
+
+
     seqAOut = [seqAOut[i:i+consoleWidth] for i in range(0, len(seqAOut), consoleWidth)]
     seqAlign = [seqAlign[i:i+consoleWidth] for i in range(0, len(seqAlign), consoleWidth)]
     seqBOut = [seqBOut[i:i+consoleWidth] for i in range(0, len(seqBOut), consoleWidth)]
@@ -816,5 +889,5 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
         print(seqBOut[idx])
     print(finalScore)
 
-    
+
 

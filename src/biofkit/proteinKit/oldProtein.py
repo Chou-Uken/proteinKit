@@ -10,12 +10,12 @@ from biofkit.proteinKit import pdbKit
 # load the information of all amino-acid-residue atoms into a list. output[idx] shows the information of an atom.
 def pdb2List(pdbFilePath: str, csvPath: str = '', colName: bool = False) -> list[list[int, str, str, int, str, float, float, float]]:
     """Read a PDB file into a list.
-    
+
     Args:
         pdbFilePath (str): PDB file path.
         csvPath (str): If you want to output a csv file, this argument is needed.
         colName (str): True for pdbInfoColumns exist in this list, false otherwise.
-    
+
     Returns:
         list: Protein structure in form of list.
     """
@@ -92,7 +92,7 @@ def pdb2Dict(pdbFilePath: str) -> dict[str, list]:
 # This funtion 'proDict2ProList' is used to tranfer pdbDict into pdbList.
 def proDict2ProList(rawDict: dict) -> list:
     """Transfer a protein structure information with dictionary form into a list. It has been decrepit.
-    
+
     Args:
         rawDict (dict): Protein structure information with form of dictionary.
 
@@ -121,7 +121,7 @@ def proList2ProDict(rawList: list) -> dict:
 
     Args:
         rawList (list): Protein structure information in form of list.
-    
+
     Returns:
         dict: Protein structure information in form of dictionary.
     """
@@ -146,7 +146,7 @@ def proList2ProDict(rawList: list) -> dict:
 # Define proList is valid or not?
 def proListIsValid(proList: list) -> bool:
     """Define protein structure in form of list is valid or not.
-    
+
     Args:
         proList (list): Protein structure information in form of list.
 
@@ -180,12 +180,12 @@ def proListIsValid(proList: list) -> bool:
         raise
     else:
         return (True)
-    
-        
+
+
 # Define proDict is valid or not?
 def proDictIsValid(proDict: dict) -> bool:
     """Define protein structure information in form of dictionary is valid or not.
-    
+
     Args:
         proDict (dict): Protein structure in form of dictionary.
 
@@ -228,7 +228,7 @@ def proDictIsValid(proDict: dict) -> bool:
 # This new type 'protein' is for operation pdb file.
 class OldProtein:
     """A protein class which has been decrepit.
-    
+
     This old class organize protein structures in form of list or dictionary.
     This class can contain several chains.
 
@@ -245,7 +245,7 @@ class OldProtein:
             infoDict (dict): Organized dictionary of protein structure information.
             infoList (list): Organized list of protein structure information.
             chainId (list): Read listed chains and ignore the others.
-        """            
+        """
 
         # PDB file as INPUT
         if (pdbFile):
@@ -273,7 +273,7 @@ class OldProtein:
 
     def __str__(self) -> str:
         return ('{name}: containing Chain {chainList}'.format(name = self.name, chainList = list(set(self.infoDict['ChainId']))))
-    
+
     def __repr__(self) -> str:
         return ('{name}: containing Chain {chainList}'.format(name = self.name, chainList = list(set(self.infoDict['ChainId']))))
 
