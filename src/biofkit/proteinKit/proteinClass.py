@@ -22,7 +22,7 @@ class Atom(object):
             y (float): Coordinate of y.
             z (float): Coordinate of z.
         """
-
+        
         self.serial: int = int(serial)
         self.atom: str = str(atom)
         self.x: float = float(x)

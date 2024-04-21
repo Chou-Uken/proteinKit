@@ -5,7 +5,7 @@ Sorry for my poor English.
 '''
 
 import os
-from biofkit.proteinKit.proteinClass import Atom, Residue, Peptide, Protein
+from proteinClass import Atom, Residue, Peptide, Protein
 
 class ProteinKit:
 
@@ -246,3 +246,21 @@ def assemble(pepList: list[Peptide], name: str = 'Unnamed') -> Protein:
     """
     newProtein: Protein = Protein(pepList=pepList, proteinName=name)
     return (newProtein)
+
+
+# Molecular weight of amino acids
+aaMSMW: dict[str, float] = {
+    'A': 71.03712, 'C': 103.00919, 'D': 115.02695, 'E': 129.0426,
+    'F': 147.06842, 'G': 57.02147, 'H': 137.05891, 'I': 113.08407,
+    'K': 128.09497, 'L': 113.08407, 'M': 131.04049, 'N': 114.04293,
+    'P': 97.05227, 'Q': 128.05858, 'R': 156.10112, 'S': 87.03203,
+    'T': 101.04768, 'V': 99.06842, 'W': 186.07932, 'Y': 163.06333,
+}
+
+def calMW(seq: str):
+    assert (type(seq) == str)
+    all: float = 0.
+    for i in seq:
+        all += aaMSMW[i]
+    all += 18.015
+    return (all)
