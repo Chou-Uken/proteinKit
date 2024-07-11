@@ -2,6 +2,7 @@
 This script was created by Zhang Yujian on January 22nd, 2024.
 This script is aimed to convert different sequence infomation involved in bioinformation.
 '''
+from collections import OrderedDict
 
 class ConvKit:
     # codon
@@ -288,18 +289,18 @@ class ConvKit:
 
 
 # Read fasta files
-def readFasta(fastaFilePath: str) -> dict[str, str]:
-    """To read FASTA file and get its identifiers and sequences. The output is a dictionary whose keys are identifiers, values are sequences
+def readFasta(fastaFilePath: str) -> OrderedDict[str, str]:
+    """To read FASTA file and get its identifiers and sequences. The output is a ordered dictionary whose keys are identifiers, values are sequences
 
     Args:
         fastaFilePath (str): Path of FASTA file.
 
     Returns:
-        dict[str, str]: Keys are identifiers. And values are sequences.
+        OrderedDict[str, str]: Keys are identifiers. And values are sequences.
 
     """
 
-    outputDict: dict[str, str] = {}
+    outputDict: OrderedDict[str, str] = OrderedDict()
     with open(file=fastaFilePath, mode='r') as f:
         line: str = f.readline()
         tax: str = ''
@@ -418,7 +419,7 @@ def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', m
     """
 
     if (fasta != ''):
-        sequences: dict[str, str] = readFasta(fastaFilePath=fasta)
+        sequences: OrderedDict[str, str] = readFasta(fastaFilePath=fasta)
         seqA: str = list(sequences.values())[0]
         seqB: str = list(sequences.values())[1]
     seqA = seqA.upper()
@@ -888,6 +889,9 @@ def pairwiseProtAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTT', 
         print(seqAlign[idx])
         print(seqBOut[idx])
     print(finalScore)
+
+
+
 
 
 

@@ -1,6 +1,6 @@
 [project]
 name = "biofkit"
-version = "0.1.15"
+version = "0.1.16"
 authors = [
   { name="Zhang Yujian", email="Chouuken@outlook.com" },
   { name="Wu Yuexin", email="wuyvexiaoxin@163.com" }
@@ -18,3 +18,6 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/Chou-Uken/biofkit"
 Issues = "https://github.com/Chou-Uken/biofkit/issues"
+
+[project.scripts]
+readFasta = "biofkit.seqKit.cmd.readFasta:main"

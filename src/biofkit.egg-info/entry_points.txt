@@ -1,0 +1,2 @@
+[console_scripts]
+readFasta = biofkit.seqKit.cmd.readFasta:main
