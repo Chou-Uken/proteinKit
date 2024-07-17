@@ -405,7 +405,7 @@ def rna2Pro(rnaSeq: str, start: int = 0, end: int = -1) -> str:
 
 
 # Alignment
-def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', matrix: str = 'unitary', gapOpen: float = -10, gapExtend: float = -0.5, consoleWidth: int = 50) -> None:
+def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', matrix: str = 'unitary', gapOpen: float = -10, gapExtend: float = -0.5) -> None:
     """Pairwise DNA Alignment. Results will be output in console.
 
     Args:
@@ -415,7 +415,6 @@ def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', m
         matrix (str): score matrix. Can be 'unitary', 'blast' or 'tt'.
         gapOpen (float): Punishment for opening a gap.
         gapExtend (float): Punishment for extending a gap.
-        consoleWidth (int): This determine how many bases shown in a single line.
     """
 
     if (fasta != ''):
@@ -625,7 +624,7 @@ def pairwiseDnaAlign(fasta: str = '', seqA: str = 'ACGT', seqB: str = 'ACGTA', m
         else:
             seqAlign += ' '
 
-
+    consoleWidth: int = os.get_terminal_size().columns
     seqAOut = [seqAOut[i:i+consoleWidth] for i in range(0, len(seqAOut), consoleWidth)]
     seqAlign = [seqAlign[i:i+consoleWidth] for i in range(0, len(seqAlign), consoleWidth)]
     seqBOut = [seqBOut[i:i+consoleWidth] for i in range(0, len(seqBOut), consoleWidth)]
